@@ -10,11 +10,12 @@ import { useForm } from "react-hook-form"
 import { SignUpValidation } from "@/lib/validation"
 import { z } from "zod"
 import Loader from "@/components/shared/Loader"
-import { createUserAccount } from "@/lib/appwrite/api"
+import { useCreateUserAndAccount } from "@/lib/react-query/queriesAndMutations"
 
 const SignUpForm = () => {
   const { toast } = useToast()
-  const isLoading = false;
+
+  const { mutateAsync: createUserAccount, isLoading: isCreatingUser } = useCreateUserAndAccount();
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof SignUpValidation>>({
@@ -27,6 +28,8 @@ const SignUpForm = () => {
     },
   })
  
+
+
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof SignUpValidation>) {
     const newUser = await createUserAccount(values); 
@@ -100,7 +103,7 @@ const SignUpForm = () => {
               )}
             />
             <Button type="submit" className="shad-button_primary">
-              {isLoading ? (
+              {isCreatingUser ? (
                 <div className='flex-center gap-2'>
                   <Loader/> Loading...
                 </div>
